@@ -1,5 +1,8 @@
 import sys
 import re
+import threading
+
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox, QProgressBar
 
 from vna_get_s2p import VNA
@@ -131,37 +134,50 @@ class DataInputApp(QMainWindow):
                 ["cal_name", calibration_data if calibration_data else "None", ""]
             ], columns=["parameter", "value", "unit"])
 
-            # Configure the VNA and perform measurements
-            self.progress_bar.setEnabled(True)  # Enable the progress bar
-            self.progress_bar.setVisible(True)  # Show the progress bar
-            vna.comcheck()
-            vna.configure(df_conf)
-            vna.measure_setup()
+            def measurement_thread():
+                # Configure the VNA and perform measurements
+                vna.comcheck()
+                vna.configure(df_conf)
+                vna.measure_setup()
 
-            # Save and retrieve S-parameter data
-            s2p_filename = "measurement.s2p"  # Change the filename as needed
+                # Save and retrieve S-parameter data
+                s2p_filename = "measurement.s2p"  # Change the filename as needed
 
-            vna.saves2p(s2p_filename)
-            vna.fileget(s2p_filename)
+                vna.saves2p(s2p_filename)
+                vna.fileget(s2p_filename)
 
-            # Close the connection to the VNA
-            vna.close()
-            self.progress_bar.setEnabled(False)  # Disable the progress bar
-            self.progress_bar.setVisible(False)  # Hide the progress bar
-    
-            print("Measurement and data retrieval complete.")
+                # Close the connection to the VNA
+                vna.close()
 
-            # Plot the gathered S-parameter data
-            data = rf.Network(s2p_filename)
-            data.plot_s_db()
+                # Schedule GUI-related operations to run in the main thread
+                QTimer.singleShot(0, self.show_plot)
 
-            plt.show()  # Display the plot
+            # Disable the submit button and show the progress bar
+            self.progress_bar.setEnabled(True)
+            self.progress_bar.setVisible(True)
+            self.submit_button.setEnabled(False)
+
+            # Start the measurement thread
+            thread = threading.Thread(target=measurement_thread)
+            thread.start()
         else:
             print("Invalid IP Address:", ip_address)
 
     def validate_ipv4(self, ip_address):
         ipv4_pattern = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")
         return ipv4_pattern.match(ip_address) is not None
+
+    def show_plot(self):
+        # Plot the gathered S-parameter data
+        s2p_filename = "measurement.s2p"  # Change the filename as needed
+        data = rf.Network(s2p_filename)
+        data.plot_s_db()
+        plt.show()  # Display the plot
+
+        # Re-enable the submit button and hide the progress bar
+        self.progress_bar.setEnabled(False)
+        self.progress_bar.setVisible(False)
+        self.submit_button.setEnabled(True)
 
 
 def main():
