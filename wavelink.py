@@ -15,16 +15,18 @@ class DataInputApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PyWavelink')
-        self.setGeometry(100, 100, 400, 500)  # Adjust window dimensions
+        self.setGeometry(100, 100, 400, 500)  # Set window dimensions
 
         self.init_ui()
 
     def init_ui(self):
+        # Set up the central widget and layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
         layout = QGridLayout()
 
+        # Define saved value options for the combo box
         saved_value_options = ['Select', 'WR-75',
                                'WR-51', 'WR-42', 'WR-34', 'WR-28', 'Coax']
         self.saved_values_combo = QComboBox()
@@ -77,10 +79,13 @@ class DataInputApp(QMainWindow):
         self.progress_bar.setVisible(False)  # Hide the progress bar
         layout.addWidget(self.progress_bar, len(input_labels) + 4, 0, 1, 3)
 
+        # Connect the Submit button click event to the handle_submit method
         self.submit_button.clicked.connect(self.handle_submit)
 
+        # Set up the central widget's layout
         central_widget.setLayout(layout)
 
+        # Define saved values and calibration data for different configurations
         self.saved_value_data = {
             'WR-75': [9.9, 15.0, 1021, 1, -10],
             'WR-51': [14.5, 22.0, 1501, 1, -10],
@@ -100,13 +105,14 @@ class DataInputApp(QMainWindow):
         }
 
     def handle_saved_value_selection(self, index):
+        # Handle changes in the selected saved value from the combo box
         selected_value = self.saved_values_combo.currentText()
         if selected_value in self.saved_value_data:
             values = self.saved_value_data[selected_value]
             for idx, (spin_box, value) in enumerate(zip(self.spin_boxes, values)):
                 spin_box.setValue(value)
 
-            # Update the calibration text field if a calibration value exists for the selected option
+            # Update the calibration text field if a calibration value exists
             if selected_value in self.calibration_data:
                 self.calibration_edit.setText(
                     self.calibration_data[selected_value])
@@ -115,6 +121,7 @@ class DataInputApp(QMainWindow):
                 self.calibration_edit.clear()
 
     def handle_submit(self):
+        # Retrieve input values and IP address from the GUI
         input_values = [spin_box.value() for spin_box in self.spin_boxes]
         ip_address = self.ip_address_edit.text()
         calibration_data = self.calibration_edit.text()
@@ -142,7 +149,6 @@ class DataInputApp(QMainWindow):
 
                 # Save and retrieve S-parameter data
                 s2p_filename = "measurement.s2p"  # Change the filename as needed
-
                 vna.saves2p(s2p_filename)
                 vna.fileget(s2p_filename)
 
