@@ -1,6 +1,6 @@
 import sys
 import re
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox, QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox
 
 
 class DataInputApp(QMainWindow):
@@ -47,8 +47,7 @@ class DataInputApp(QMainWindow):
         self.calibration_edit = QLineEdit()
         self.calibration_edit.setPlaceholderText('Enter calibration data')
 
-        default_values = [9.9, 15.0, 1021, 1, -10]
-        for idx, (label, spin_box, default_value) in enumerate(zip(input_labels, self.spin_boxes, default_values)):
+        for idx, (label, spin_box) in enumerate(zip(input_labels, self.spin_boxes)):
             layout.addWidget(QLabel(label), idx + 2, 0)
             if label == "Points":
                 spin_box.setMinimum(1)
@@ -56,7 +55,6 @@ class DataInputApp(QMainWindow):
             elif label == "Power (dBm)":
                 spin_box.setMinimum(-80)
                 spin_box.setMaximum(20)
-            spin_box.setValue(default_value)
             layout.addWidget(spin_box, idx + 2, 1)
 
         layout.addWidget(QLabel("Calibration:"), len(input_labels) + 2, 0)
@@ -71,10 +69,10 @@ class DataInputApp(QMainWindow):
 
         self.saved_value_data = {
             'WR-75': [9.9, 15.0, 1021, 1, -10],
-            'WR-51': [14.5, 22.0, 1501, 2, -12],
-            'WR-42': [17.6, 26.7, 1821, 4, -15],
-            'WR-34': [21.7, 33.0, 2261, 5, -16],
-            'WR-28': [26.3, 40.0, 2741, 6, -17],
+            'WR-51': [14.5, 22.0, 1501, 1, -10],
+            'WR-42': [17.6, 26.7, 1821, 1, -10],
+            'WR-34': [21.7, 33.0, 2261, 1, -10],
+            'WR-28': [26.3, 40.0, 2741, 1, -10],
             'Coax': [2.0, 6.0, 1001, 1, -10]
         }
 
