@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, Q
 
 from vna_get_s2p import VNA
 import pandas as pd
+import matplotlib.pyplot as plt
+import skrf as rf
+
 
 class DataInputApp(QMainWindow):
     def __init__(self):
@@ -136,6 +139,12 @@ class DataInputApp(QMainWindow):
             vna.close()
 
             print("Measurement and data retrieval complete.")
+
+            # Plot the gathered S-parameter data
+            data = rf.Network(s2p_filename)
+            data.plot_s_db()
+
+            plt.show()  # Display the plot
         else:
             print("Invalid IP Address:", ip_address)
 
