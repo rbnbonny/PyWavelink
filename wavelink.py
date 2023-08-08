@@ -1,20 +1,55 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
-
-# Only needed for access to command line arguments
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
-# You need one (and only one) QApplication instance per application.
-# Pass in sys.argv to allow command line arguments for your app.
-# If you know you won't use command line arguments QApplication([]) works too.
-app = QApplication(sys.argv)
+class Window(QMainWindow):
 
-# Create a Qt widget, which will be our window.
-window = QMainWindow()
-window.show()  # IMPORTANT!!!!! Windows are hidden by default.
+    def __init__(self):
+        super().__init__()
 
-# Start the event loop.
-app.exec()
+        # setting title
+        self.setWindowTitle("Python ")
 
+        # setting geometry
+        self.setGeometry(100, 100, 500, 400)
 
-# Your application won't reach here until you exit and the event
-# loop has stopped.
+        # calling method
+        self.UiComponents()
+
+        # showing all the widgets
+        self.show()
+
+    # method for components
+    def UiComponents(self):
+
+        # creating double spin box
+        d_spin = QDoubleSpinBox(self)
+
+        # setting geometry to the double spin box
+        d_spin.setGeometry(100, 100, 150, 40)
+
+        # adding action to the double spin box
+        d_spin.valueChanged.connect(lambda:  spin_method())
+
+        # creating a label
+        label = QLabel("GeeksforGeeks", self)
+
+        # setting geometry to the label
+        label.setGeometry(100, 200, 300, 80)
+
+        # making label multi line
+        label.setWordWrap(True)
+
+        def spin_method():
+
+            # getting current value of double spin box
+            value = d_spin.value()
+
+            # setting text to the label
+            label.setText("Current Value : " + str(value))
+
+App = QApplication(sys.argv)
+window = Window()
+sys.exit(App.exec())
