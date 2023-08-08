@@ -1,6 +1,6 @@
 import sys
 import re
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox, QProgressBar
 
 from vna_get_s2p import VNA
 import pandas as pd
@@ -68,6 +68,12 @@ class DataInputApp(QMainWindow):
         self.submit_button = QPushButton("Submit")
         layout.addWidget(self.submit_button, len(input_labels) + 3, 0, 1, 3)
 
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 0)  # Indeterminate range
+        self.progress_bar.setEnabled(False)  # Disable the progress bar
+        self.progress_bar.setVisible(False)  # Hide the progress bar
+        layout.addWidget(self.progress_bar, len(input_labels) + 4, 0, 1, 3)
+
         self.submit_button.clicked.connect(self.handle_submit)
 
         central_widget.setLayout(layout)
@@ -126,18 +132,23 @@ class DataInputApp(QMainWindow):
             ], columns=["parameter", "value", "unit"])
 
             # Configure the VNA and perform measurements
+            self.progress_bar.setEnabled(True)  # Enable the progress bar
+            self.progress_bar.setVisible(True)  # Show the progress bar
             vna.comcheck()
             vna.configure(df_conf)
             vna.measure_setup()
 
             # Save and retrieve S-parameter data
             s2p_filename = "measurement.s2p"  # Change the filename as needed
+
             vna.saves2p(s2p_filename)
             vna.fileget(s2p_filename)
 
             # Close the connection to the VNA
             vna.close()
-
+            self.progress_bar.setEnabled(False)  # Disable the progress bar
+            self.progress_bar.setVisible(False)  # Hide the progress bar
+    
             print("Measurement and data retrieval complete.")
 
             # Plot the gathered S-parameter data
@@ -147,7 +158,6 @@ class DataInputApp(QMainWindow):
             plt.show()  # Display the plot
         else:
             print("Invalid IP Address:", ip_address)
-
 
     def validate_ipv4(self, ip_address):
         ipv4_pattern = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")
