@@ -2,6 +2,8 @@ import sys
 import re
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox
 
+from vna_get_s2p import VNA
+import pandas as pd
 
 class DataInputApp(QMainWindow):
     def __init__(self):
@@ -106,12 +108,37 @@ class DataInputApp(QMainWindow):
         calibration_data = self.calibration_edit.text()
 
         if self.validate_ipv4(ip_address):
-            # Do something with the input values, valid IP address, and calibration data
-            print("Input Values:", input_values)
-            print("IP Address:", ip_address)
-            print("Calibration Data:", calibration_data)
+            # Create an instance of the VNA class and connect to the VNA
+            vna = VNA(ip_address)
+            vna.connect()
+
+            # Prepare the configuration DataFrame based on the input values
+            df_conf = pd.DataFrame([
+                ["f::start", input_values[0], "GHz"],
+                ["f::stop", input_values[1], "GHz"],
+                ["nb_pts", input_values[2], "-"],
+                ["bandwidth", input_values[3], "kHz"],
+                ["power", input_values[4], "dBm"],
+                ["cal_name", calibration_data if calibration_data else "None", ""]
+            ], columns=["parameter", "value", "unit"])
+
+            # Configure the VNA and perform measurements
+            vna.comcheck()
+            vna.configure(df_conf)
+            vna.measure_setup()
+
+            # Save and retrieve S-parameter data
+            s2p_filename = "measurement.s2p"  # Change the filename as needed
+            vna.saves2p(s2p_filename)
+            vna.fileget(s2p_filename)
+
+            # Close the connection to the VNA
+            vna.close()
+
+            print("Measurement and data retrieval complete.")
         else:
             print("Invalid IP Address:", ip_address)
+
 
     def validate_ipv4(self, ip_address):
         ipv4_pattern = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")
