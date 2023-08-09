@@ -15,7 +15,7 @@ class DataInputApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PyWavelink')
-        self.setGeometry(100, 100, 400, 550)  # Adjusted window dimensions
+        self.setGeometry(100, 100, 400, 500)  # Adjusted window dimensions
 
         self.init_ui()
 
@@ -56,8 +56,7 @@ class DataInputApp(QMainWindow):
             "Stop Frequency (GHz)",
             "Points",
             "Bandwidth (kHz)",
-            "Power (dBm)",
-            "Calibration"
+            "Power (dBm)"
         ]
         self.spin_boxes = [QDoubleSpinBox() if label not in (
             "Points", "Power (dBm)") else QSpinBox() for label in input_labels]
