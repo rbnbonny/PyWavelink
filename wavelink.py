@@ -1,6 +1,7 @@
 import sys
 import re
 import threading
+import json
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QDoubleSpinBox, QPushButton, QGridLayout, QComboBox, QLineEdit, QWidget, QSpinBox, QProgressBar
@@ -16,8 +17,16 @@ class DataInputApp(QMainWindow):
         super().__init__()
         self.setWindowTitle('PyWavelink')
         self.setGeometry(100, 100, 400, 550)  # Adjusted window dimensions
+        self.setFixedSize(400, 550)  # Make the window not resizable
+
+        self.saved_value_options = self.load_saved_value_options()
 
         self.init_ui()
+
+    def load_saved_value_options(self):
+        with open('config.json', 'r') as config_file:
+            config = json.load(config_file)
+            return config.get('saved_value_options', [])
 
     def init_ui(self):
         # Set up the central widget and layout

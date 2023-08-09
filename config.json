@@ -1,0 +1,53 @@
+{
+    "saved_value_options": [
+        {
+            "name": "Select",
+            "preset": {
+                "values": [0, 0, 0, 0, 0],
+                "calibration": ""
+            }
+        },
+        {
+            "name": "WR-75",
+            "preset": {
+                "values": [9.9, 15.0, 1021, 1, -10],
+                "calibration": "WR75"
+            }
+        },
+        {
+            "name": "WR-51",
+            "preset": {
+                "values": [14.5, 22.0, 1501, 1, -10],
+                "calibration": "WR51"
+            }
+        },
+        {
+            "name": "WR-42",
+            "preset": {
+                "values": [17.6, 26.7, 1821, 1, -10],
+                "calibration": "WR42"
+            }
+        },
+        {
+            "name": "WR-34",
+            "preset": {
+                "values": [21.7, 33.0, 2261, 1, -10],
+                "calibration": "WR34"
+            }
+        },
+        {
+            "name": "WR-28",
+            "preset": {
+                "values": [26.3, 40.0, 2741, 1, -10],
+                "calibration": "WR28"
+            }
+        },
+        {
+            "name": "Coax",
+            "preset": {
+                "values": [2.0, 6.0, 1001, 1, -10],
+                "calibration": "coaxcav"
+            }
+        }
+    ]
+}
