@@ -15,7 +15,7 @@ class DataInputApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('PyWavelink')
-        self.setGeometry(100, 100, 400, 500)  # Set window dimensions
+        self.setGeometry(100, 100, 400, 550)  # Adjusted window dimensions
 
         self.init_ui()
 
@@ -26,6 +26,13 @@ class DataInputApp(QMainWindow):
 
         layout = QGridLayout()
 
+        # Add a field for the measurement name
+        self.measurement_name_label = QLabel("Measurement Name:")
+        self.measurement_name_edit = QLineEdit()
+        self.measurement_name_edit.setPlaceholderText('Enter measurement name')
+        layout.addWidget(self.measurement_name_label, 0, 0)
+        layout.addWidget(self.measurement_name_edit, 0, 1, 1, 2)
+
         # Define saved value options for the combo box
         saved_value_options = ['Select', 'WR-75',
                                'WR-51', 'WR-42', 'WR-34', 'WR-28', 'Coax']
@@ -34,15 +41,15 @@ class DataInputApp(QMainWindow):
         self.saved_values_combo.currentIndexChanged.connect(
             self.handle_saved_value_selection)
 
-        layout.addWidget(QLabel("Saved Value:"), 0, 0)
-        layout.addWidget(self.saved_values_combo, 0, 1, 1, 2)
+        layout.addWidget(QLabel("Saved Value:"), 1, 0)
+        layout.addWidget(self.saved_values_combo, 1, 1, 1, 2)
 
         self.ip_address_edit = QLineEdit()
         self.ip_address_edit.setText('10.43.1.19')
         self.ip_address_edit.setPlaceholderText('Enter a valid IPv4 address')
 
-        layout.addWidget(QLabel("IP Address:"), 1, 0)
-        layout.addWidget(self.ip_address_edit, 1, 1, 1, 2)
+        layout.addWidget(QLabel("IP Address:"), 2, 0)
+        layout.addWidget(self.ip_address_edit, 2, 1, 1, 2)
 
         input_labels = [
             "Start Frequency (GHz)",
@@ -58,26 +65,26 @@ class DataInputApp(QMainWindow):
         self.calibration_edit.setPlaceholderText('Enter calibration data')
 
         for idx, (label, spin_box) in enumerate(zip(input_labels, self.spin_boxes)):
-            layout.addWidget(QLabel(label), idx + 2, 0)
+            layout.addWidget(QLabel(label), idx + 3, 0)
             if label == "Points":
                 spin_box.setMinimum(1)
                 spin_box.setMaximum(100001)
             elif label == "Power (dBm)":
                 spin_box.setMinimum(-80)
                 spin_box.setMaximum(20)
-            layout.addWidget(spin_box, idx + 2, 1)
+            layout.addWidget(spin_box, idx + 3, 1)
 
-        layout.addWidget(QLabel("Calibration:"), len(input_labels) + 2, 0)
-        layout.addWidget(self.calibration_edit, len(input_labels) + 2, 1, 1, 2)
+        layout.addWidget(QLabel("Calibration:"), len(input_labels) + 3, 0)
+        layout.addWidget(self.calibration_edit, len(input_labels) + 3, 1, 1, 2)
 
         self.submit_button = QPushButton("Submit")
-        layout.addWidget(self.submit_button, len(input_labels) + 3, 0, 1, 3)
+        layout.addWidget(self.submit_button, len(input_labels) + 4, 0, 1, 3)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 0)  # Indeterminate range
         self.progress_bar.setEnabled(False)  # Disable the progress bar
         self.progress_bar.setVisible(False)  # Hide the progress bar
-        layout.addWidget(self.progress_bar, len(input_labels) + 4, 0, 1, 3)
+        layout.addWidget(self.progress_bar, len(input_labels) + 5, 0, 1, 3)
 
         # Connect the Submit button click event to the handle_submit method
         self.submit_button.clicked.connect(self.handle_submit)
@@ -125,6 +132,7 @@ class DataInputApp(QMainWindow):
         input_values = [spin_box.value() for spin_box in self.spin_boxes]
         ip_address = self.ip_address_edit.text()
         calibration_data = self.calibration_edit.text()
+        measurement_name = self.measurement_name_edit.text()  # Get measurement name
 
         if self.validate_ipv4(ip_address):
             # Create an instance of the VNA class and connect to the VNA
@@ -147,8 +155,8 @@ class DataInputApp(QMainWindow):
                 vna.configure(df_conf)
                 vna.measure_setup()
 
-                # Save and retrieve S-parameter data
-                s2p_filename = "measurement.s2p"  # Change the filename as needed
+                # Save and retrieve S-parameter data using the measurement name as the filename
+                s2p_filename = f"{measurement_name}.s2p"  # Use the entered measurement name
                 vna.saves2p(s2p_filename)
                 vna.fileget(s2p_filename)
 
