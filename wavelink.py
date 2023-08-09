@@ -182,7 +182,7 @@ class DataInputApp(QMainWindow):
 
     def show_plot(self):
         # Plot the gathered S-parameter data
-        s2p_filename = "measurement.s2p"  # Change the filename as needed
+        s2p_filename = self.measurement_name_edit.text() + ".s2p"
         data = rf.Network(s2p_filename)
         data.plot_s_db()
         plt.show()  # Display the plot
